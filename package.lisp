@@ -1,5 +1,6 @@
 (defpackage cl-generator
   (:nicknames generator)
   (:use cl)
-  (:export #:lambda*
+  (:export #:defun*
+	   #:lambda*
 	   #:yield))
