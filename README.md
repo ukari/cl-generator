@@ -7,8 +7,8 @@
 * `yield`
 
 ## usage
-- `lambda*`
 
+### lambda*
 ``` lisp
 (lambda* ()
   (let ((i 0))
@@ -17,8 +17,7 @@
          (incf i))))
 ```
 
-- `defun*`
-
+### defun*
 ``` lisp
 (defun* test (f)
   (let ((i 0))
@@ -29,7 +28,7 @@
 (test (lambda* (x) (yield x)))
 ```
 
-- `defmacro*`
+### defmacro*
 ``` lisp
 (defmacro* test (f)
   `(let ((i 0))
