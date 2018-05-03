@@ -1,23 +1,43 @@
 # cl-generator
 
 ## provides
-* defun*
-* lambda*
-* yield
+* `lambda*`
+* `defun*`
+* `defmacro*`
+* `yield`
 
 ## usage
+- `lambda*`
+
+``` lisp
+(lambda* ()
+  (let ((i 0))
+    (loop while (< i 10)
+       do (print (yield i))
+         (incf i))))
+```
+
+- `defun*`
+
 ``` lisp
 (defun* test (f)
   (let ((i 0))
-    (loop while (< i 10) do (multiple-value-bind (_ v) (funcall f i) (declare (ignore _)) (print v)) (incf i))))
+    (loop while (< i 10)
+       do (print (nth-value 1 (funcall f i)))
+         (incf i))))
 
 (test (lambda* (x) (yield x)))
 ```
 
+- `defmacro*`
 ``` lisp
-(lambda* ()
-	 (let ((i 0))
-	   (loop while (< i 10) do (print (yield i)) (incf i))))
+(defmacro* test (f)
+  `(let ((i 0))
+    (loop while (< i 10) do
+	 (print (funcall ,f i))
+	 (incf i))))
+
+(test (lambda (x) (yield x)))
 ```
 
 ## LICENSE
