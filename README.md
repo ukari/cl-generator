@@ -43,9 +43,9 @@
 ``` lisp
 (defmacro* test (f)
   `(let ((i 0))
-    (loop while (< i 10) do
-	 (print (funcall ,f i))
-	 (incf i))))
+     (loop while (< i 10)
+        do (print (funcall ,f i))
+          (incf i))))
 
 (test (lambda (x) (yield x)))
 ```
