@@ -1,0 +1,18 @@
+(in-package :cl-generator-util)
+
+(defmacro for (expr &body body)
+  (let* ((var (car `,expr))	 
+	 (generator (eval (cadr `,expr)))
+	 (g-next (gensym))
+	 (next (gensym))
+	 (value (gensym)))
+    `(let ((,g-next nil))
+       (multiple-value-bind (,next ,value) (funcall ,generator)	
+	 (labels ((f (,var)
+		    ,@body
+		    (multiple-value-bind (,next ,value) (funcall ,g-next)
+		      (if (not (null ,next))
+			  (progn (setf ,g-next ,next)
+				 (f ,value))))))
+	   (setf ,g-next ,next)
+	   (f ,value))))))

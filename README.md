@@ -1,12 +1,23 @@
 # cl-generator
 
 ## provides
+
+### cl-generator
 * `lambda*`
 * `defun*`
 * `defmacro*`
 * `yield`
 
+### cl-generator-util
+* `for`
+
 ## usage
+``` lisp
+(require 'cl-generator)
+(use-package 'cl-generator)
+(use-package 'cl-generator-util)
+```
+
 
 ### lambda*
 ``` lisp
@@ -22,7 +33,7 @@
 (defun* test (f)
   (let ((i 0))
     (loop while (< i 10)
-       do (print (nth-value 1 (funcall f i)))
+       do (print (nth-value 1 (funcall (funcall f i))))
          (incf i))))
 
 (test (lambda* (x) (yield x)))
@@ -37,6 +48,17 @@
 	 (incf i))))
 
 (test (lambda (x) (yield x)))
+```
+
+### for
+``` lisp
+(defun* number-generator (x)
+  (let ((i 0))
+    (loop while (< i x)
+       do (yield i)
+         (incf i))))
+
+(for (x (number-generator 10)) (print x))
 ```
 
 ## LICENSE
