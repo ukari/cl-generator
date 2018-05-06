@@ -16,6 +16,7 @@
 (require 'cl-generator)
 (use-package 'cl-generator)
 (use-package 'cl-generator-util)
+(cl-generator:header)
 ```
 
 
@@ -24,19 +25,19 @@
 (lambda* ()
   (let ((i 0))
     (loop while (< i 10)
-       do (print (yield i))
+       do (yield i)
          (incf i))))
 ```
 
 ### defun*
 ``` lisp
-(defun* test (f)
+(defun* test ()
   (let ((i 0))
     (loop while (< i 10)
-       do (print (nth-value 1 (funcall (funcall f i))))
+       do (yield i)
          (incf i))))
 
-(test (lambda* (x) (yield x)))
+(test)
 ```
 
 ### defmacro*
@@ -44,7 +45,7 @@
 (defmacro* test (f)
   `(let ((i 0))
      (loop while (< i 10)
-        do (print (funcall ,f i))
+        do (funcall ,f i)
           (incf i))))
 
 (test (lambda (x) (yield x)))
