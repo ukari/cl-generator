@@ -6,7 +6,9 @@
   (:import-from cl-cont
 		#:with-call/cc
 		#:call/cc)
-  (:export #:lambda*
+
+  (:export #:header
+           #:lambda*
 	   #:defun*
 	   #:defmacro*
 	   #:yield))
