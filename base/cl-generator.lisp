@@ -23,4 +23,9 @@
 (defmacro defmacro* (name args &body body)
   `(defmacro ,name ,args (list 'lambda-yield () ,@body)))
 
-
+(defmacro yield* (cont)
+  (let ((x (gensym)))
+    `(if (eq (type-of ,cont) 'funcallable/cc)
+         (iterable-object-value (funcall ,cont))
+         (if (listp ,cont)
+             (loop for ,x in ,cont do (yield ,x))))))

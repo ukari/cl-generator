@@ -6,9 +6,10 @@
   (:import-from cl-cont
 		#:with-call/cc
 		#:call/cc)
-
+  (:shadowing-import-from cl-cont #:funcallable/cc)
   (:export #:header
            #:lambda*
 	   #:defun*
 	   #:defmacro*
-	   #:yield))
+	   #:yield
+           #:yield*))
