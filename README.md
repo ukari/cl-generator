@@ -1,4 +1,5 @@
 # cl-generator
+generator in common lisp
 
 ## provides
 
@@ -7,6 +8,7 @@
 * `defun*`
 * `defmacro*`
 * `yield`
+* `yield*`
 
 ### cl-generator-util
 * `for`
@@ -18,7 +20,6 @@
 (use-package 'cl-generator-util)
 (cl-generator:header)
 ```
-
 
 ### lambda*
 ``` lisp
@@ -49,6 +50,18 @@
           (incf i))))
 
 (test (lambda (x) (yield x)))
+```
+
+### yield*
+``` lisp
+(defun* a ()
+  (yield 1)
+  (yield 2)
+  (print "end"))
+
+(defun* b ()
+  (yield* '(7 8 9))
+  (yield* (a)))
 ```
 
 ### for
