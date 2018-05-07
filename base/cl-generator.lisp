@@ -25,7 +25,7 @@
 
 (defmacro yield* (expr)
   (let ((x (gensym))
-        (cont (gensym)))
+        (cont (gensym "cont")))
     `(let ((,cont ,expr ))
        (if (eq (type-of ,cont) 'funcallable/cc)
            (iterable-object-value (funcall ,cont))

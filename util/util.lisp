@@ -5,7 +5,7 @@
 (defmacro for (expr &body body)
   (let* ((var (car `,expr))	 
          (generator (eval (cadr `,expr)))
-         (iter (gensym)))
+         (iter (gensym "iter")))
     `(let ((,iter (funcall ,generator)))
        (labels ((f (,var)
                   ,@body
