@@ -4,10 +4,10 @@ generator in common lisp
 ## provides
 
 ### cl-generator
+* `yield`
 * `lambda*`
 * `defun*`
 * `defmacro*`
-* `yield`
 * `yield*`
 
 ### cl-generator-util
@@ -19,6 +19,14 @@ generator in common lisp
 (use-package 'cl-generator)
 (use-package 'cl-generator-util)
 (cl-generator:header)
+```
+
+### yield
+``` lisp
+(defun* test (x)
+  (print (yield x)))
+
+(funcall (test 0))
 ```
 
 ### lambda*
@@ -62,6 +70,9 @@ generator in common lisp
 (defun* b ()
   (yield* '(7 8 9))
   (yield* (a)))
+
+(defun* c ()
+  (yield* (list (yield 1))))
 ```
 
 ### for
