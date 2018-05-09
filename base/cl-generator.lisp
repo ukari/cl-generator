@@ -7,10 +7,9 @@
         (x (gensym))
         (list (gensym "list")))
     `(let ((,list (multiple-value-list ,expr)))
-       (print ,list)
        (call/cc (lambda (,k) (values-list (or (mapcar (lambda (,x) (make-iterable-object :next ,k :value ,x))
-                                                                    ,list)
-                                                            (list (make-iterable-object :next ,k :value nil)))))))))
+                                                      ,list)
+                                              (list (make-iterable-object :next ,k :value nil)))))))))
 
 (defmacro lambda* (args &body body)
   (let ((x (gensym)))
@@ -45,10 +44,15 @@
 
 
 
-;(defun* a () (yield 1) (yield 2) (values 3 4 5))
+;; (defun* a () (yield 1) (yield 2) (values 3 4 5))
 
-;(defun* b () (yield (yield* (a))))
+;; (defun* b () (yield (yield* (a))))
 ;; 1 2 {3 4 5}
 
-;(defun* c () (yield* (a)))
-;; 1 2 
+;; (defun* c () (yield* (a)))
+;; 1 2
+
+
+;; (defun* a () (yield 1) (yield 2) (values 3 4 5))
+;; (defun* b () (funcall (a)) (print "hi"))
+;; (defun c () (print (funcall (b))) nil)
