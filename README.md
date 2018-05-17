@@ -35,7 +35,7 @@ generator in common lisp
 ```
 the same thing as in javascript
 ``` javascript
-function* matryoshka(x){
+function* matryoshka(x) {
 	return yield yield yield x;
 }
 ```

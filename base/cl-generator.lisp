@@ -61,7 +61,6 @@
         (x (gensym))
         (cont (gensym "cont")))
     `(let ((,cont ,expr))
-       (print ,cont)
        (if (eq (type-of ,cont) 'separate-continuation)
            (call/cc (lambda (,k) (proxy (funcall ,cont) ,k)))
            (if (listp ,cont)
