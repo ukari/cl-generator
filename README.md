@@ -29,6 +29,16 @@ generator in common lisp
 (funcall (test 0))
 ```
 
+``` lisp
+(defun* matryoshka (x)
+  (yield (yield (yield x))))
+```
+the same thing as in javascript
+``` javascript
+function* matryoshka(x){
+	return yield yield yield x;
+}
+```
 ### lambda*
 ``` lisp
 (lambda* ()
