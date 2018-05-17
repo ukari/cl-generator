@@ -1,6 +1,6 @@
 (defsystem cl-generator
   :serial t
-  :depends-on (cl-cont cl-annot)
+  :depends-on (cl-cont cl-annot closer-mop)
   :components
   ((:module "base"
 	    :serial t

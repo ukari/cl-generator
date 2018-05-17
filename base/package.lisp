@@ -5,8 +5,11 @@
   (:use cl)
   (:import-from cl-cont
 		#:with-call/cc
+                #:without-call/cc
 		#:call/cc)
-  (:shadowing-import-from cl-cont #:funcallable/cc)
+  (:import-from closer-mop
+                #:funcallable-standard-class
+                #:set-funcallable-instance-function)
   (:export #:header
            #:lambda*
 	   #:defun*
