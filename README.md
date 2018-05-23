@@ -82,7 +82,17 @@ function* matryoshka(x) {
   (yield* (a)))
 
 (defun* c ()
-  (yield* (list (yield 1))))
+  (yield* (list (yield 1) (yield 2))))
+```
+
+``` lisp
+(defun* a ()
+  (yield 1)
+  (yield 2)
+  (values 3 4 5))
+
+(defun* b ()
+  (yield (yield* (a))))
 ```
 
 ### for
