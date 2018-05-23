@@ -20,18 +20,16 @@
   (let ((list (gensym)))
    `(let ((,list (multiple-value-list ,expr)))
       (multi ,list ,functor ,empty))))
-;;(defun* a () (yield 2) (yield 3))
-;;(defun* test () (yield* (a)) (print "hi"))
 
 (defun proxy (inner-list cont)
-  (let ((inner (car inner-list)))
-    (let ((next (iterable-object-next inner)))
-      (if (null next)
-          (setf inner (funcall cont (mapcar (lambda (x) (iterable-object-value x)) inner-list)))
-          (setf (iterable-object-next inner) (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont))))
-      (multi inner-list
-             (lambda (x) (make-iterable-object :next (iterable-object-next inner) :value (iterable-object-value x)))
-             inner))))
+  (let* ((inner (car inner-list))
+         (next (iterable-object-next inner)))
+    (if (null next)
+        (setf inner (funcall cont (mapcar (lambda (x) (iterable-object-value x)) inner-list)))
+        (setf (iterable-object-next inner) (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont))))
+    (multi inner-list
+           (lambda (x) (make-iterable-object :next (iterable-object-next inner) :value (iterable-object-value x)))
+           inner)))
 
 (defmacro yield (&optional expr)
   (let ((k (gensym))
@@ -72,18 +70,3 @@
            (if (listp ,cont)
                (loop for ,x in ,cont do (yield ,x))
                (error "invalid yield* argument"))))))
-
-
-
-;; (defun* a () (yield 1) (yield 2) (values 3 4 5))
-
-;; (defun* b () (yield (yield* (a))))
-;; 1 2 {3 4 5}
-
-;; (defun* c () (yield* (a)))
-;; 1 2
-
-
-;; (defun* a () (yield 1) (yield 2) (values 3 4 5))
-;; (defun* b () (funcall (a)) (print "hi"))
-;; (defun c () (print (funcall (b))) nil)
