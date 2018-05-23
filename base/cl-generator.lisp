@@ -27,7 +27,7 @@
   (let ((inner (car inner-list)))
     (let ((next (iterable-object-next inner)))
       (if (null next)
-          (setf inner (funcall cont (iterable-object-value inner)))
+          (setf inner (funcall cont (mapcar (lambda (x) (iterable-object-value x)) inner-list)))
           (setf (iterable-object-next inner) (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont))))
       (multi inner-list
              (lambda (x) (make-iterable-object :next (iterable-object-next inner) :value (iterable-object-value x)))
@@ -68,7 +68,7 @@
         (cont (gensym "cont")))
     `(let ((,cont ,expr))
        (if (eq (type-of ,cont) 'separate-continuation)
-            (call/cc (lambda (,k) (proxy (multiple-value-list (funcall ,cont)) ,k)))
+           (values-list (call/cc (lambda (,k) (proxy (multiple-value-list (funcall ,cont)) ,k))))
            (if (listp ,cont)
                (loop for ,x in ,cont do (yield ,x))
                (error "invalid yield* argument"))))))
