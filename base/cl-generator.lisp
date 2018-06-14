@@ -23,6 +23,12 @@
    `(let ((,list (multiple-value-list ,expr)))
       (multi ,list ,functor ,empty))))
 
+(defmacro multiple-iter (expr next)
+  (let ((x (gensym)))
+    `(multiple ,expr
+               (lambda (,x) (make-iter :next ,next :value ,x))
+               (make-iter :next ,next :value nil))))
+
 (defun proxy (inner-list cont)
   (let* ((inner (car inner-list))
          (next (iter-next inner)))
@@ -34,18 +40,12 @@
            inner)))
 
 (defmacro yield (&optional expr)
-  (let ((k (gensym))
-        (x (gensym)))
-    `(call/cc (with-call/cc (lambda (,k) (multiple ,expr
-                                                   (lambda (,x) (make-iter :next ,k :value ,x))
-                                                   (make-iter :next ,k :value nil)))))))
+  (let ((k (gensym)))
+    `(call/cc (with-call/cc (lambda (,k) (multiple-iter ,expr ,k))))))
 
 (defmacro lambda-yield (&body body)
-  (let ((x (gensym)))
-    `(with-call/cc
-       (lambda () (multiple (progn ,@body)
-                            (lambda (,x) (make-iter :next nil :value ,x))
-                            (make-iter :next nil :value nil))))))
+  `(with-call/cc
+     (lambda () (multiple-iter (progn ,@body) nil))))
 
 (defmacro lambda* (args &body body)
   `(lambda ,args (isolate-cont (lambda-yield () ,@body))))
@@ -54,7 +54,7 @@
   `(defun ,name ,args (isolate-cont (lambda-yield () ,@body))))
 
 (defmacro defmacro* (name args &body body)
-  `(defmacro ,name ,args `(isolate-cont (lambda-yield () ,@body))))
+  `(defmacro ,name ,args `(isolate-cont (lambda-yield () ,,@body))))
 
 (defmacro yield* (expr)
   (let ((k (gensym))
