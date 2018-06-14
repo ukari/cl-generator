@@ -111,8 +111,12 @@ function* matryoshka(x) {
 
 ### iter-value, iter-next
 ``` lisp
-(defparameter ten-generator (number-generator 10))
-(defparameter x (funcall ten-generator))
+(defun* ten-generator ()
+  (let ((i 0))
+    (loop while (< i 10)
+       do (yield i)
+         (incf i))))
+(defparameter x (funcall (ten-generator)))
 (loop until (null (iter-next x))
    do (print (iter-value x))
      (setf x (funcall (iter-next x))))
