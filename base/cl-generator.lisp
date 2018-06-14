@@ -54,7 +54,7 @@
   `(defun ,name ,args (isolate-cont (lambda-yield () ,@body))))
 
 (defmacro defmacro* (name args &body body)
-  `(defmacro ,name ,args (list 'isolate-cont (list 'lambda-yield () ,@body))))
+  `(defmacro ,name ,args `(isolate-cont (lambda-yield () ,@body))))
 
 (defmacro yield* (expr)
   (let ((k (gensym))
