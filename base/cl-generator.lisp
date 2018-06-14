@@ -43,26 +43,43 @@
   (let ((k (gensym)))
     `(call/cc (with-call/cc (lambda (,k) (multiple-iter ,expr ,k))))))
 
-(defmacro lambda-yield (&body body)
-  `(with-call/cc
-     (lambda () (multiple-iter (progn ,@body) nil))))
-
-(defmacro lambda* (args &body body)
-  `(lambda ,args (isolate-cont (lambda-yield () ,@body))))
-
-(defmacro defun* (name args &body body)
-  `(defun ,name ,args (isolate-cont (lambda-yield () ,@body))))
-
-(defmacro defmacro* (name args &body body)
-  `(defmacro ,name ,args `(isolate-cont (lambda-yield () ,,@body))))
+(defmacro yield (&optional expr)
+  (declare (ignore expr))
+  (error "yield is not defined"))
 
 (defmacro yield* (expr)
-  (let ((k (gensym))
+  (declare (ignore expr))
+  (error "yield* is not defined"))
+
+(defmacro enable-yield (&body body)
+  (let ((k1 (gensym))
+        (k2 (gensym))
         (x (gensym))
         (cont (gensym "cont")))
-    `(let ((,cont ,expr))
-       (if (eq (type-of ,cont) 'separate-continuation)
-           (values-list (call/cc (lambda (,k) (proxy (multiple-value-list (funcall ,cont)) ,k))))
-           (if (listp ,cont)
-               (loop for ,x in ,cont do (yield ,x))
-               (error "invalid yield* argument"))))))
+    `(with-call/cc
+       (lambda ()
+         (multiple-iter
+          (macrolet ((yield (&optional expr)
+                       (let ((,k1 (gensym)))
+                         `(call/cc (with-call/cc (lambda (,,k1) (multiple-iter ,expr ,,k1))))))
+                     (yield* (expr)
+                       (let ((,k2 (gensym))
+                             (,x (gensym))
+                             (,cont (gensym "cont")))
+                         `(let ((,,cont ,expr))
+                            (if (eq (type-of ,,cont) 'separate-continuation)
+                                (values-list (call/cc (lambda (,,k2) (proxy (multiple-value-list (funcall ,,cont)) ,,k2))))
+                                (if (listp ,,cont)
+                                    (loop for ,,x in ,,cont do (yield ,,x))
+                                    (error "invalid yield* argument")))))))
+            ,@body)
+          nil)))))
+
+(defmacro lambda* (args &body body)
+  `(lambda ,args (isolate-cont (enable-yield () ,@body))))
+
+(defmacro defun* (name args &body body)
+  `(defun ,name ,args (isolate-cont (enable-yield () ,@body))))
+
+(defmacro defmacro* (name args &body body)
+  `(defmacro ,name ,args `(isolate-cont (enable-yield () ,,@body))))
