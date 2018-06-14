@@ -10,7 +10,8 @@
   (:import-from closer-mop
                 #:funcallable-standard-class
                 #:set-funcallable-instance-function)
-  (:export #:header
+  (:export #:iter-next
+           #:iter-value
            #:lambda*
 	   #:defun*
 	   #:defmacro*

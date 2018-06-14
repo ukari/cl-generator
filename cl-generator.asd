@@ -6,7 +6,6 @@
 	    :serial t
 	    :components
 	    ((:file "package")
-             (:file "header")
 	     (:file "cl-generator")))
    (:module "util"
 	    :serial t

@@ -12,6 +12,7 @@ supports common lisp multiple values
 * `defun*`
 * `defmacro*`
 * `yield*`
+* `iter-value`, `iter-next`
 
 ### cl-generator-util
 * `for`
@@ -21,7 +22,6 @@ supports common lisp multiple values
 (require 'cl-generator)
 (use-package 'cl-generator)
 (use-package 'cl-generator-util)
-(cl-generator:header)
 ```
 
 ### yield
@@ -107,6 +107,15 @@ function* matryoshka(x) {
          (incf i))))
 
 (for (x (number-generator 10)) (print x))
+```
+
+### iter-value, iter-next
+``` lisp
+(defparameter ten-generator (number-generator 10))
+(defparameter x (funcall ten-generator))
+(loop until (null (iter-next x))
+   do (print (iter-value x))
+     (setf x (funcall (iter-next x))))
 ```
 
 ## LICENSE

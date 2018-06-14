@@ -1,6 +1,8 @@
 (in-package :cl-generator)
 
-(header)
+(defstruct iter
+  (value nil)
+  (next nil :type (or null function)))
 
 (defclass separate-continuation ()
   ((function :initarg :function))
@@ -23,20 +25,20 @@
 
 (defun proxy (inner-list cont)
   (let* ((inner (car inner-list))
-         (next (iterable-object-next inner)))
+         (next (iter-next inner)))
     (if (null next)
-        (setf inner (funcall cont (mapcar (lambda (x) (iterable-object-value x)) inner-list)))
-        (setf (iterable-object-next inner) (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont))))
+        (setf inner (funcall cont (mapcar (lambda (x) (iter-value x)) inner-list)))
+        (setf (iter-next inner) (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont))))
     (multi inner-list
-           (lambda (x) (make-iterable-object :next (iterable-object-next inner) :value (iterable-object-value x)))
+           (lambda (x) (make-iter :next (iter-next inner) :value (iter-value x)))
            inner)))
 
 (defmacro yield (&optional expr)
   (let ((k (gensym))
         (x (gensym)))
     `(call/cc (with-call/cc (lambda (,k) (multiple ,expr
-                                                   (lambda (,x) (make-iterable-object :next ,k :value ,x))
-                                                   (make-iterable-object :next ,k :value nil)))))))
+                                                   (lambda (,x) (make-iter :next ,k :value ,x))
+                                                   (make-iter :next ,k :value nil)))))))
 
 (defmacro lambda* (args &body body)
   (let ((x (gensym)))
@@ -44,15 +46,15 @@
        (lambda ,args
          (with-call/cc
            (lambda () (multiple (progn ,@body)
-                                (lambda (,x) (make-iterable-object :next nil :value ,x))
-                                (make-iterable-object :next nil :value nil))))))))
+                                (lambda (,x) (make-iter :next nil :value ,x))
+                                (make-iter :next nil :value nil))))))))
 
 (defmacro lambda-yield (&body body)
   (let ((x (gensym)))
     `(with-call/cc
        (lambda () (multiple (progn ,@body)
-                            (lambda (,x) (make-iterable-object :next nil :value ,x))
-                            (make-iterable-object :next nil :value nil))))))
+                            (lambda (,x) (make-iter :next nil :value ,x))
+                            (make-iter :next nil :value nil))))))
 
 (defmacro defun* (name args &body body)
   `(defun ,name ,args (isolate-cont (lambda-yield () ,@body))))
