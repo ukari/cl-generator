@@ -40,21 +40,15 @@
                                                    (lambda (,x) (make-iter :next ,k :value ,x))
                                                    (make-iter :next ,k :value nil)))))))
 
-(defmacro lambda* (args &body body)
-  (let ((x (gensym)))
-    `(isolate-cont
-       (lambda ,args
-         (with-call/cc
-           (lambda () (multiple (progn ,@body)
-                                (lambda (,x) (make-iter :next nil :value ,x))
-                                (make-iter :next nil :value nil))))))))
-
 (defmacro lambda-yield (&body body)
   (let ((x (gensym)))
     `(with-call/cc
        (lambda () (multiple (progn ,@body)
                             (lambda (,x) (make-iter :next nil :value ,x))
                             (make-iter :next nil :value nil))))))
+
+(defmacro lambda* (args &body body)
+  `(lambda ,args (isolate-cont (lambda-yield () ,@body))))
 
 (defmacro defun* (name args &body body)
   `(defun ,name ,args (isolate-cont (lambda-yield () ,@body))))
