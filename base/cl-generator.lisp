@@ -15,7 +15,7 @@
        ,instance)))
 
 (defun no-value-p (x)
-   (and nil (listp x) (= 0 (length x))))
+   (and (listp x) (= 0 (length x))))
 
 (defmacro multi (list functor empty)
   `(if (no-value-p ,list)
@@ -35,17 +35,14 @@
                (make-iter :next ,next :value nil))))
 
 (defun proxy (inner-list cont)
-  (if (no-value-p inner-list)
-      (print "no-value")
-      ;(setf inner-list (list (funcall cont (values))))
-      )
-  (let* ((inner (car inner-list))
-         (next (iter-next inner)))
+  (let* ((result-list (mapcar (lambda (x) (iter-value x)) inner-list))
+         (inner (car inner-list))
+         (next (iter-next (or inner (make-iter :next nil :value nil)))))
     (print "next")
     (print next)
     (print inner-list)
     (if (null next)
-        (setf inner-list (list (funcall cont (mapcar (lambda (x) (print "here") (iter-value x)) inner-list))))
+        (setf inner-list (list (funcall cont result-list)))
         (setf (iter-next inner) (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont))))
     (multi inner-list
            (lambda (x) (print "dis") (print x) (make-iter :next (iter-next x) :value (iter-value x)))
