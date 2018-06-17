@@ -17,22 +17,19 @@
 (defun no-value-p (x)
    (and (listp x) (= 0 (length x))))
 
-(defmacro multi (list functor empty)
+(defmacro multi (list functor)
   `(if (no-value-p ,list)
        (values)
-       (values-list (or (mapcar ,functor ,list)
-                        (list ,empty)))))
+       (values-list (mapcar ,functor ,list))))
 
-(defmacro multiple (expr functor empty)
+(defmacro multiple (expr functor)
   (let ((list (gensym)))
    `(let ((,list (multiple-value-list ,expr)))
-      (multi ,list ,functor ,empty))))
+      (multi ,list ,functor))))
 
 (defmacro multiple-iter (expr next)
   (let ((x (gensym)))
-    `(multiple ,expr
-               (lambda (,x) (make-iter :next ,next :value ,x))
-               (make-iter :next ,next :value nil))))
+    `(multiple ,expr (lambda (,x) (make-iter :next ,next :value ,x)))))
 
 (defun proxy (inner-list cont)
   (let* ((return-list (mapcar (lambda (x) (iter-value x)) inner-list))
