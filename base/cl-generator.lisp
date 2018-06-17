@@ -14,9 +14,14 @@
        (set-funcallable-instance-function ,instance (without-call/cc (lambda () (funcall ,@body))))
        ,instance)))
 
+(defun no-value-p (x)
+   (and nil (listp x) (= 0 (length x))))
+
 (defmacro multi (list functor empty)
-  `(values-list (or (mapcar ,functor ,list)
-                    (list ,empty))))
+  `(if (no-value-p ,list)
+       (values)
+       (values-list (or (mapcar ,functor ,list)
+                        (list ,empty)))))
 
 (defmacro multiple (expr functor empty)
   (let ((list (gensym)))
@@ -30,18 +35,21 @@
                (make-iter :next ,next :value nil))))
 
 (defun proxy (inner-list cont)
+  (if (no-value-p inner-list)
+      (print "no-value")
+      ;(setf inner-list (list (funcall cont (values))))
+      )
   (let* ((inner (car inner-list))
          (next (iter-next inner)))
+    (print "next")
+    (print next)
+    (print inner-list)
     (if (null next)
-        (setf inner (funcall cont (mapcar (lambda (x) (iter-value x)) inner-list)))
+        (setf inner-list (list (funcall cont (mapcar (lambda (x) (print "here") (iter-value x)) inner-list))))
         (setf (iter-next inner) (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont))))
     (multi inner-list
-           (lambda (x) (make-iter :next (iter-next inner) :value (iter-value x)))
+           (lambda (x) (print "dis") (print x) (make-iter :next (iter-next x) :value (iter-value x)))
            inner)))
-
-(defmacro yield (&optional expr)
-  (let ((k (gensym)))
-    `(call/cc (with-call/cc (lambda (,k) (multiple-iter ,expr ,k))))))
 
 (defmacro yield (&optional expr)
   (declare (ignore expr))
