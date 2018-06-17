@@ -38,16 +38,13 @@
   (let* ((result-list (mapcar (lambda (x) (iter-value x)) inner-list))
          (inner (car inner-list))
          (next (iter-next (or inner (make-iter :next nil :value nil)))))
-    (print "next")
-    (print next)
-    (print inner-list)
     (if (null next)
         (let ((skip (funcall cont result-list)))
           (if (not (or (null skip) (null (iter-next skip))))
               (setf inner-list (list skip))))
         (setf (iter-next inner) (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont))))
     (multi inner-list
-           (lambda (x) (print "dis") (print x) (make-iter :next (iter-next x) :value (iter-value x)))
+           (lambda (x) (make-iter :next (iter-next x) :value (iter-value x)))
            inner)))
 
 (defmacro yield (&optional expr)
