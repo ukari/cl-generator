@@ -1,6 +1,7 @@
 (defsystem cl-generator
   :serial t
   :depends-on (cl-cont cl-annot closer-mop)
+  :pathname "src/"
   :components
   ((:module "base"
 	    :serial t
