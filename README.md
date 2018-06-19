@@ -122,5 +122,16 @@ function* matryoshka(x) {
      (setf x (funcall (iter-next x))))
 ```
 
+## test
+
+### require
+``` lisp
+(require 'cl-generator-test)
+```
+### run tests
+``` lisp
+(cl-generator-test:run)
+```
+
 ## LICENSE
 MIT
