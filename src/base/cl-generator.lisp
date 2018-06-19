@@ -1,6 +1,7 @@
 (in-package :cl-generator)
 
 (defstruct iter
+  (no-value nil :type boolean)
   (value nil)
   (next nil :type (or null function)))
 
@@ -17,27 +18,29 @@
 (defun no-value-p (x)
    (and (listp x) (= 0 (length x))))
 
-(defmacro multi (list functor)
+(defmacro multi (list functor empty)
   `(if (no-value-p ,list)
-       (values)
+       (values ,empty)
        (values-list (mapcar ,functor ,list))))
 
-(defmacro multiple (expr functor)
+(defmacro multiple (expr functor empty)
   (let ((list (gensym)))
    `(let ((,list (multiple-value-list ,expr)))
-      (multi ,list ,functor))))
+      (multi ,list ,functor ,empty))))
 
 (defmacro multiple-iter (expr next)
   (let ((x (gensym)))
-    `(multiple ,expr (lambda (,x) (make-iter :next ,next :value ,x)))))
+    `(multiple ,expr
+               (lambda (,x) (make-iter :next ,next :value ,x))
+               (make-iter :next ,next :no-value t))))
 
 (defun proxy (inner-list cont)
   (let* ((return-list (mapcar (lambda (x) (iter-value x)) inner-list))
          (inner (car inner-list))
          (next (if (iter-p inner) (iter-next inner) nil)))
     (if (null next)
-        (values-list (multiple-value-list (funcall cont return-list)))
-        (values-list (list (make-iter :next (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont)) :value (iter-value inner)))))))
+        (funcall cont return-list)
+        (make-iter :next (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont)) :value (iter-value inner)))))
 
 (defmacro yield (&optional expr)
   (declare (ignore expr))
