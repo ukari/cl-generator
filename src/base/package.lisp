@@ -12,6 +12,7 @@
                 #:set-funcallable-instance-function)
   (:export #:iter-next
            #:iter-value
+           #:iter-p
            #:lambda*
 	   #:defun*
 	   #:defmacro*
