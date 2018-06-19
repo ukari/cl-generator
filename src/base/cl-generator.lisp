@@ -34,7 +34,7 @@
 (defun proxy (inner-list cont)
   (let* ((return-list (mapcar (lambda (x) (iter-value x)) inner-list))
          (inner (car inner-list))
-         (next (iter-next (or inner (make-iter :next nil :value nil)))))
+         (next (if (iter-p inner) (iter-next inner) nil)))
     (if (null next)
         (values-list (multiple-value-list (funcall cont return-list)))
         (values-list (list (make-iter :next (lambda (&optional x) (proxy (multiple-value-list (funcall next x)) cont)) :value (iter-value inner)))))))
