@@ -12,40 +12,9 @@
   (make-iter :cur (lambda () (iter-id end))))
 
 (defmethod iter-id ((cont function))
-  (let ((iter (make-iter :cur (lambda () (print "cont") (iter-id cont)))))
-    (setf (iter-next iter) (gen-next iter cont)
-          ;; (lambda ()
-          ;;   (let ((res (funcall cont)))
-          ;;     (print "here")
-          ;;     (setf (iter-cur iter) (lambda () (iter-id (pass-cont res))))
-          ;;     (setf (iter-next iter) (gen-next iter (pass-cont res)))
-          ;;     (values-list (pass-results res))))
-          )
+  (let ((iter (make-iter :cur (lambda () (iter-id cont)))))
+    (setf (iter-next iter) (gen-next iter cont))
     iter))
-
-;; (defmethod iter-id ((pass pass))
-;;   (let ((iter (make-iter :cur (lambda () (print "pass") (iter-id (pass-cont pass))))))
-;;     (setf (iter-next iter)
-;;           (lambda ()
-;;             (let ((res (funcall (pass-cont pass))))
-;;               (setf (iter-cur iter) (lambda () (iter-id (pass-cont res))))
-;;               (setf (iter-next iter) (gen-next iter (pass-cont res)))
-;;               (values-list (pass-results res)))))
-;;     iter))
-
-;; (defmethod gen-next-common ((iter iter) x (next-functor function) (cur-functor function))
-;;   (lambda ()
-;;     (let* ((res (funcall (funcall next-functor x)))
-;;            (next (if (null res) nil (gen-next iter (funcall next-functor res)))))
-;;       (setf (iter-next iter) next)
-;;       ;(setf (iter-cur iter) (lambda () (print "gen-next") (iter-id (funcall cur-functor res))))
-;;       (values-list (if (null next) nil (pass-results res))))))
-
-;; (defmethod gen-next ((iter iter) (cont function))
-;;   (gen-next-common iter cont (lambda (x) x) (lambda (x) x)))
-
-;; (defmethod gen-next ((iter iter) (pass pass))
-;;   (gen-next-common iter pass (lambda (x) (pass-cont x)) (lambda (x) (pass-cont x))))
 
 (defmethod pass-next ((pass null)))
 
@@ -57,7 +26,7 @@
     (let* ((res (funcall cont))
            (next (gen-next iter (pass-next res))))
       (setf (iter-next iter) next)
-      (setf (iter-cur iter) (lambda () (print "gen-next") (iter-id (pass-next res))))
+      (setf (iter-cur iter) (lambda () (iter-id (pass-next res))))
       (values-list (if (null next) nil (pass-results res))))))
 
 (defmethod gen-next ((iter iter) (pass pass))
