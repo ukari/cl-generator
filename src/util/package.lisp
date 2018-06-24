@@ -5,5 +5,5 @@
   (:use cl)
   (:import-from cl-generator
                 #:iter-next
-                #:iter-value)
+                #:iter-cur)
   (:export #:for))

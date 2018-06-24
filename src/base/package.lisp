@@ -11,7 +11,7 @@
                 #:funcallable-standard-class
                 #:set-funcallable-instance-function)
   (:export #:iter-next
-           #:iter-value
+           #:iter-cur
            #:iter-p
            #:lambda*
 	   #:defun*

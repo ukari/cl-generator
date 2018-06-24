@@ -8,8 +8,9 @@
 	    :components
 	    ((:file "package")
 	     (:file "cl-generator")))
-   (:module "util"
-	    :serial t
-	    :components
-	    ((:file "package")
-	     (:file "util")))))
+   ;; (:module "util"
+   ;;          :serial t
+   ;;          :components
+   ;;          ((:file "package")
+   ;;           (:file "util")))
+   ))
