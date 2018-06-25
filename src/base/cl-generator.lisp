@@ -40,10 +40,7 @@
        (make-pass :cont ,cont :results ,list))))
 
 (defmethod proxy ((inner iter) (cont function))
-  (let ((res))
-    (if (null (iter-next inner))
-        (setf res (multiple-value-list (funcall cont)))
-        (setf res (multiple-value-list (funcall (iter-next inner)))))
+  (let ((res (multiple-value-list (funcall (iter-next inner)))))
     (if (null (iter-next inner))
         (funcall cont)
         (make-pass :cont (lambda () (proxy inner cont)) :results res))))
