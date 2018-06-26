@@ -40,10 +40,11 @@
        (make-pass :cont ,cont :results ,list))))
 
 (defmethod proxy ((inner iter) (cont function))
-  (let ((res (multiple-value-list (funcall (iter-next inner)))))
-    (if (null (iter-next inner))
+  (let* ((copy (funcall (iter-cur inner)))
+         (res (multiple-value-list (funcall (iter-next copy)))))
+    (if (null (iter-next copy))
         (funcall cont)
-        (make-pass :cont (lambda () (proxy inner cont)) :results res))))
+        (make-pass :cont (lambda () (proxy copy cont)) :results res))))
 
 (defmacro isolate-cont (&body body)
   `(without-call/cc (iter-id (lambda () (progn ,@body)))))
@@ -63,7 +64,7 @@
         (res (gensym "res")))
     `(macrolet ((yield (&optional expr)
                   (let ((,k1 (gensym)))
-                    `(call/cc (with-call/cc (lambda (,,k1) (gen-pass ,expr ,,k1))))))
+                    `(call/cc (with-call/cc (lambda (,,k1) (print "cont") (print ,,k1) (gen-pass ,expr ,,k1))))))
                 (yield* (expr)
                   (let ((,k2 (gensym))
                         (,x (gensym))
