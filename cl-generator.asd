@@ -1,4 +1,7 @@
 (defsystem cl-generator
+  :description "cl-generator, a generator implementation for common lisp"
+  :author "Muromi Ukari"
+  :license "MIT"
   :serial t
   :depends-on (cl-cont cl-annot closer-mop)
   :pathname "src/"
