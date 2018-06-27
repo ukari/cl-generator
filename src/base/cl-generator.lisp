@@ -41,18 +41,18 @@
 
 (defmethod iter-next-proxy ((iter iter) (next function) (cont function))
   (lambda (&optional (x nil supplied))
-    (let ((results (multiple-value-list
+    (let* ((copy (funcall (iter-cur iter)))
+          (results (multiple-value-list
                 (if supplied
-                    (funcall (iter-next iter) x)
-                    (funcall (iter-next iter))))))
-      (if (null (iter-next iter))
+                    (funcall (iter-next copy) x)
+                    (funcall (iter-next copy))))))
+      (if (null (iter-next copy))
           (funcall cont)
-          (make-pass :cont (iter-next-proxy iter (iter-next iter) cont) :results results)))))
+          (make-pass :cont (iter-next-proxy copy (iter-next copy) cont) :results results)))))
 
 (defmethod proxy ((inner iter) (cont function))
-  (let* ((copy (funcall (iter-cur inner)))
-         (res (multiple-value-list (funcall (iter-next copy)))))
-    (make-pass :cont (iter-next-proxy copy (iter-next copy) cont) :results res)))
+  (let ((res (multiple-value-list (funcall (iter-next inner)))))
+    (make-pass :cont (iter-next-proxy inner (iter-next inner) cont) :results res)))
 
 (defmacro isolate-cont (&body body)
   `(without-call/cc (iter-id (lambda () (progn ,@body)))))
