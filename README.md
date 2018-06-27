@@ -1,18 +1,23 @@
 # cl-generator
 generator in common lisp
 
-## about
-supports common lisp multiple values
+## supports
+- yield
+- yield*
+- works with anonymous and macros
+- common lisp multiple values
+- copy iter with continuation
 
 ## provides
 
 ### cl-generator
 * `yield`
+* `yield*`
 * `lambda*`
 * `defun*`
 * `defmacro*`
-* `yield*`
-* `iter-value`, `iter-next`
+* `iter-next`
+* `iter-cur`
 
 ### cl-generator-util
 * `for`
@@ -29,7 +34,9 @@ supports common lisp multiple values
 (defun* test (x)
   (print (yield x)))
 
-(funcall (test 0))
+(defparameter iter (test 0))
+(funcall (iter-next iter))
+(funcall (iter-next iter) 1)
 ```
 
 ``` lisp
@@ -109,17 +116,35 @@ function* matryoshka(x) {
 (for (x (number-generator 10)) (print x))
 ```
 
-### iter-value, iter-next
+### iter-next
 ``` lisp
 (defun* ten-generator ()
   (let ((i 0))
     (loop while (< i 10)
        do (yield i)
          (incf i))))
-(defparameter x (funcall (ten-generator)))
+(defparameter x (ten-generator))
+(defparameter res (funcall (iter-next x)))
 (loop until (null (iter-next x))
-   do (print (iter-value x))
-     (setf x (funcall (iter-next x))))
+   do (print res)
+     (setf res (funcall (iter-next x))))
+```
+### iter-cur
+copy a iter with it's current continuation
+
+``` lisp
+(defun* test ()
+  (yield 1)
+  (yield 2)
+  (yield 3))
+
+(defparameter raw (test))
+(defparameter copy (funcall (iter-cur raw)))
+(print (funcall (iter-next raw)))
+(defparameter copy2 (funcall (iter-cur raw)))
+(print (funcall (iter-next raw)))
+(print (funcall (iter-next copy)))
+(print (funcall (iter-next copy2)))
 ```
 
 ## test
