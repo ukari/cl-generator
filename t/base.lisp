@@ -4,7 +4,7 @@
   (let* ((generator (lambda* (x) (yield (+ x 1))))
          (iter (funcall generator 4)))
     (assert-true (iter-p iter))
-    (assert-eq 6 (funcall (iter-next iter)))
+    (assert-eq 5 (funcall (iter-next iter)))
     (assert-eq "end" (funcall (iter-next iter) "end"))
     (assert-nil (iter-next iter))))
 
