@@ -4,48 +4,48 @@
   (let* ((generator (lambda* (x) (yield (+ x 1))))
          (iter (funcall generator 4)))
     (assert-true (iter-p iter))
-    (assert-eq (funcall (iter-next iter)) 5)
-    (assert-eq (funcall (iter-next iter) "end") "end")
-    (assert-eq (iter-next iter) nil)))
+    (assert-eq 6 (funcall (iter-next iter)))
+    (assert-eq "end" (funcall (iter-next iter) "end"))
+    (assert-nil (iter-next iter))))
 
 (define-test lambda*-values
   (let* ((generator (lambda* () (yield) (values 2 3)))
          (iter (funcall generator)))
     (funcall (iter-next iter))
-    (assert-equal (multiple-value-list (funcall (iter-next iter))) (list 2 3))))
+    (assert-equal (list 2 3) (multiple-value-list (funcall (iter-next iter))))))
 
 (define-test lambda*-no-values
   (let* ((generator (lambda* () (yield) (values)))
          (iter (funcall generator)))
     (funcall (iter-next iter))
-    (assert-eq (length (multiple-value-list (funcall (iter-next iter)))) 0)))
+    (assert-eq 0 (length (multiple-value-list (funcall (iter-next iter)))))))
 
 (define-test yield-values
   (let* ((generator (lambda* () (yield (values 1 2))))
          (iter (funcall generator)))
-    (assert-equal (multiple-value-list (funcall (iter-next iter))) (list 1 2))))
+    (assert-equal (list 1 2) (multiple-value-list (funcall (iter-next iter))))))
 
 (define-test yield-no-values
   (let* ((generator (lambda* () (yield (values))))
          (iter (funcall generator)))
-    (assert-eq (length (multiple-value-list (funcall (iter-next iter)))) 0)))
+    (assert-eq 0 (length (multiple-value-list (funcall (iter-next iter)))))))
 
 (define-test yield*
   (let* ((a (lambda* () (yield 1) (yield 2)))
          (b (lambda* () (yield* (funcall a))))
          (iter (funcall b)))
-    (assert-eq (funcall (iter-next iter)) 1)
-    (assert-eq (funcall (iter-next iter)) 2)
+    (assert-eq 1 (funcall (iter-next iter)))
+    (assert-eq 2 (funcall (iter-next iter)))
     (funcall (iter-next iter))
-    (assert-eq (iter-next iter) nil)))
+    (assert-nil (iter-next iter))))
 
 (define-test yield*-common
     (let* ((a (lambda* () (yield)))
            (b (lambda* () (yield* (funcall a))))
            (iter (funcall b)))
       (funcall (iter-next iter))
-      (assert-eq (funcall (iter-next iter) "end") "end")
-      (assert-eq (iter-next iter) nil)))
+      (assert-eq "end" (funcall (iter-next iter) "end"))
+      (assert-nil (iter-next iter))))
 
 (define-test yield*-return
   (let* ((a (lambda* () (yield 1) (yield 2) (values 3)))
@@ -53,7 +53,7 @@
          (iter (funcall b)))
     (funcall (iter-next iter))
     (funcall (iter-next iter))
-    (assert-eq (funcall (iter-next iter)) 3)))
+    (assert-eq 3 (funcall (iter-next iter)))))
 
 (define-test yield*-return-1
   (let* ((a (lambda* () (yield 1) (yield 2) (values 3)))
@@ -61,7 +61,7 @@
          (iter (funcall b)))
     (funcall (iter-next iter))
     (funcall (iter-next iter))
-    (assert-eq (funcall (iter-next iter)) 4)))
+    (assert-eq 4 (funcall (iter-next iter)))))
 
 (define-test yield*-return-values
   (let* ((a (lambda* () (yield 1) (yield 2) (values 3 4)))
@@ -69,7 +69,7 @@
          (iter (funcall b)))
     (funcall (iter-next iter))
     (funcall (iter-next iter))
-    (assert-equal (multiple-value-list (funcall (iter-next iter))) (list 3 4))))
+    (assert-equal (list 3 4) (multiple-value-list (funcall (iter-next iter))))))
 
 (define-test yield*-return-no-values
   (let* ((a (lambda* () (yield 1) (yield 2) (values)))
@@ -77,7 +77,7 @@
          (iter (funcall b)))
     (funcall (iter-next iter))
     (funcall (iter-next iter))
-    (assert-eq (length (multiple-value-list (funcall (iter-next iter)))) 0)))
+    (assert-eq 0 (length (multiple-value-list (funcall (iter-next iter)))))))
 
 (define-test yield-cur-copy-first
   (let* ((generator (lambda* () (yield 1) (yield 2) (yield 3)))
@@ -114,16 +114,16 @@
 
 (define-test defun*
   (let* ((x (test-defun* 0)))
-    (assert-eq (funcall (iter-next x)) 0)
-    (assert-eq (funcall (iter-next x) "end") "end")))
+    (assert-eq 0 (funcall (iter-next x)))
+    (assert-eq "end" (funcall (iter-next x) "end"))))
 
 (defmacro* test-defmacro* (f)
   `(funcall ,f (yield 5)))
 
 (define-test defmacro*
   (let* ((x (test-defmacro* (lambda (x) (+ 1 x)))))
-    (assert-eq (funcall (iter-next x)) 5)
-    (assert-eq (funcall (iter-next x) 0) 1)))
+    (assert-eq 5 (funcall (iter-next x)))
+    (assert-eq 1 (funcall (iter-next x) 0))))
 
 (defun* fib (x y)
   (yield y)
@@ -135,16 +135,16 @@
 (define-test functional-fibonacci
   (let* ((iter (fibonacci))
          (copy (funcall (iter-cur iter))))
-    (assert-eq (funcall (iter-next iter)) 1)
-    (assert-eq (funcall (iter-next iter)) 1)
-    (assert-eq (funcall (iter-next iter)) 2)
-    (assert-eq (funcall (iter-next iter)) 3)
-    (assert-eq (funcall (iter-next iter)) 5)
-    (assert-eq (funcall (iter-next copy)) 1)
-    (assert-eq (funcall (iter-next copy)) 1)
-    (assert-eq (funcall (iter-next copy)) 2)
-    (assert-eq (funcall (iter-next copy)) 3)
-    (assert-eq (funcall (iter-next copy)) 5)
-    (assert-eq (funcall (iter-next iter)) 8)
+    (assert-eq 1 (funcall (iter-next iter)))
+    (assert-eq 1 (funcall (iter-next iter)))
+    (assert-eq 2 (funcall (iter-next iter)))
+    (assert-eq 3 (funcall (iter-next iter)))
+    (assert-eq 5 (funcall (iter-next iter)))
+    (assert-eq 1 (funcall (iter-next copy)))
+    (assert-eq 1 (funcall (iter-next copy)))
+    (assert-eq 2 (funcall (iter-next copy)))
+    (assert-eq 3 (funcall (iter-next copy)))
+    (assert-eq 5 (funcall (iter-next copy)))
+    (assert-eq 8 (funcall (iter-next iter)))
     (setf copy (funcall (iter-cur iter)))
-    (assert-eq (funcall (iter-next copy)) 13)))
+    (assert-eq 13 (funcall (iter-next copy)))))
