@@ -8,6 +8,20 @@
   (cont nil :type (or null function))
   (results nil :type list))
 
+(defmethod multi ((end null))
+  end)
+
+(defmethod multi ((cont function))
+  (lambda (&optional (x nil supplied))
+    (if supplied
+        (funcall cont (list x))
+        (funcall cont))))
+
+(defmacro gen-pass (expr cont)
+  (let ((list (gensym)))
+    `(let ((,list (multiple-value-list ,expr)))
+       (make-pass :cont (multi ,cont) :results ,list))))
+
 (defmethod iter-id ((end null))
   (make-iter :cur (lambda () (iter-id end))))
 
@@ -34,11 +48,6 @@
 
 (defmethod gen-next ((iter iter) (end null)))
 
-(defmacro gen-pass (expr cont)
-  (let ((list (gensym)))
-    `(let ((,list (multiple-value-list ,expr)))
-       (make-pass :cont ,cont :results ,list))))
-
 (defmethod iter-next-proxy ((iter iter) (next function) (cont function))
   (lambda (&optional (x nil supplied))
     (let* ((copy (funcall (iter-cur iter)))
@@ -47,7 +56,7 @@
                     (funcall (iter-next copy) x)
                     (funcall (iter-next copy))))))
       (if (null (iter-next copy))
-          (funcall cont)
+          (funcall cont results)
           (make-pass :cont (iter-next-proxy copy (iter-next copy) cont) :results results)))))
 
 (defmethod proxy ((inner iter) (cont function))
@@ -72,14 +81,14 @@
         (res (gensym "res")))
     `(macrolet ((yield (&optional expr)
                   (let ((,k1 (gensym)))
-                    `(call/cc (with-call/cc (lambda (,,k1) (gen-pass ,expr ,,k1))))))
+                    `(values-list (call/cc (with-call/cc (lambda (,,k1) (gen-pass ,expr ,,k1)))))))
                 (yield* (expr)
                   (let ((,k2 (gensym))
                         (,x (gensym))
                         (,res (gensym "res")))
                     `(let ((,,res ,expr))
                        (if (eq (type-of ,,res) 'iter)
-                           (call/cc (lambda (,,k2) (proxy ,,res ,,k2)))
+                           (values-list (call/cc (lambda (,,k2) (proxy ,,res ,,k2))))
                            (if (listp ,,res)
                                (loop for ,,x in ,,res do (yield ,,x))
                                (error "invalid yield* argument")))))))
