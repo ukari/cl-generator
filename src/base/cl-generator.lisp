@@ -12,10 +12,8 @@
   end)
 
 (defmethod multi ((cont function))
-  (lambda (&optional (x nil supplied))
-    (if supplied
-        (funcall cont (list x))
-        (funcall cont))))
+  (lambda (&rest rest)
+    (funcall cont rest)))
 
 (defmacro gen-pass (expr cont)
   (let ((list (gensym)))
