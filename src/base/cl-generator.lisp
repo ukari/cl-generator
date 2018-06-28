@@ -34,8 +34,8 @@
   (pass-cont pass))
 
 (defmethod gen-next ((iter iter) (cont function))
-  (lambda (&optional (x nil supplied))
-    (let* ((res (if supplied (funcall cont x) (funcall cont)))
+  (lambda (&rest rest)
+    (let* ((res (apply cont rest))
            (next (gen-next iter (pass-next res))))
       (setf (iter-next iter) next)
       (setf (iter-cur iter) (lambda () (iter-id (pass-next res))))
@@ -47,12 +47,9 @@
 (defmethod gen-next ((iter iter) (end null)))
 
 (defmethod iter-next-proxy ((iter iter) (next function) (cont function))
-  (lambda (&optional (x nil supplied))
+  (lambda (&rest rest)
     (let* ((copy (funcall (iter-cur iter)))
-          (results (multiple-value-list
-                (if supplied
-                    (funcall (iter-next copy) x)
-                    (funcall (iter-next copy))))))
+          (results (multiple-value-list (apply (iter-next copy) rest))))
       (if (null (iter-next copy))
           (apply cont results)
           (make-pass :cont (iter-next-proxy copy (iter-next copy) cont) :results results)))))
