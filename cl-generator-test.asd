@@ -2,6 +2,8 @@
   :description "unit tests for cl-generator"
   :author "Muromi Ukari"
   :license "MIT"
+  :version "v1.0.2"
+  :homepage "https://github.com/ukari/cl-generator"
   :serial t
   :depends-on (lisp-unit cl-generator)
   :pathname "t/"
