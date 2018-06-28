@@ -20,6 +20,12 @@
     (funcall (iter-next iter))
     (assert-eq 0 (length (multiple-value-list (funcall (iter-next iter)))))))
 
+(define-test yield-block-values
+  (let* ((generator (lambda* () (multiple-value-list (yield))))
+         (iter (funcall generator)))
+    (funcall (iter-next iter))
+    (assert-equal (list 1 2 3) (funcall (iter-next iter) 1 2 3))))
+
 (define-test yield-values
   (let* ((generator (lambda* () (yield (values 1 2))))
          (iter (funcall generator)))
