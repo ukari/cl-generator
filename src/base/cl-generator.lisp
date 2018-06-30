@@ -8,17 +8,10 @@
   (cont nil :type (or null function))
   (results nil :type list))
 
-(defmethod multi ((end null))
-  end)
-
-(defmethod multi ((cont function))
-  (lambda (&rest rest)
-    (apply cont rest)))
-
 (defmacro gen-pass (expr cont)
   (let ((list (gensym)))
     `(let ((,list (multiple-value-list ,expr)))
-       (make-pass :cont (multi ,cont) :results ,list))))
+       (make-pass :cont ,cont :results ,list))))
 
 (defmethod iter-id ((end null))
   (make-iter :cur (lambda () (iter-id end))))
