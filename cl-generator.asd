@@ -2,7 +2,7 @@
   :description "cl-generator, a generator implementation for common lisp"
   :author "Muromi Ukari"
   :license "MIT"
-  :version "v1.1.0"
+  :version "1.1.0"
   :homepage "https://github.com/ukari/cl-generator"
   :serial t
   :depends-on (cl-cont cl-annot closer-mop)
