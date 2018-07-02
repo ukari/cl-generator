@@ -91,5 +91,8 @@
 (defmacro defun* (name args &body body)
   `(defun ,name ,args (isolate-cont (enable-yield () ,@body))))
 
+(defmacro defmethod* (name args &body body)
+  `(defmethod ,name ,args (isolate-cont (enable-yield () ,@body))))
+
 (defmacro defmacro* (name args &body body)
   `(defmacro ,name ,args `(isolate-cont (enable-yield () ,,@body))))

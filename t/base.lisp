@@ -119,7 +119,15 @@
   (yield x))
 
 (define-test defun*
-  (let* ((x (test-defun* 0)))
+  (let ((x (test-defun* 0)))
+    (assert-eq 0 (funcall (iter-next x)))
+    (assert-eq "end" (funcall (iter-next x) "end"))))
+
+(defmethod* test-defmethod* ((x number))
+  (yield x))
+
+(define-test defmethod*
+  (let ((x (test-defmethod* 0)))
     (assert-eq 0 (funcall (iter-next x)))
     (assert-eq "end" (funcall (iter-next x) "end"))))
 
@@ -127,7 +135,7 @@
   `(funcall ,f (yield 5)))
 
 (define-test defmacro*
-  (let* ((x (test-defmacro* (lambda (x) (+ 1 x)))))
+  (let ((x (test-defmacro* (lambda (x) (+ 1 x)))))
     (assert-eq 5 (funcall (iter-next x)))
     (assert-eq 1 (funcall (iter-next x) 0))))
 

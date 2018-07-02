@@ -15,6 +15,7 @@ generator in common lisp
 * `yield*`
 * `lambda*`
 * `defun*`
+* `defmethod*`
 * `defmacro*`
 * `iter-next`
 * `iter-cur`
@@ -61,6 +62,17 @@ function* matryoshka(x) {
 ### defun*
 ``` lisp
 (defun* test ()
+  (let ((i 0))
+    (loop while (< i 10)
+       do (yield i)
+         (incf i))))
+
+(test)
+```
+
+### defmethod*
+``` lisp
+(defmethod* test ()
   (let ((i 0))
     (loop while (< i 10)
        do (yield i)

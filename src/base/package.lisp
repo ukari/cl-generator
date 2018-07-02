@@ -16,5 +16,6 @@
            #:lambda*
 	   #:defun*
 	   #:defmacro*
+           #:defmethod*
 	   #:yield
            #:yield*))
