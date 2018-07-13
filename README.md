@@ -24,6 +24,11 @@ generator in common lisp
 ### cl-generator-util
 * `for`
 
+## install
+``` lisp
+(ql:quickload 'cl-generator)
+```
+
 ## usage
 ``` lisp
 (require 'cl-generator)
@@ -152,6 +157,7 @@ function* matryoshka(x) {
    do (print res)
      (setf res (funcall (iter-next x))))
 ```
+
 ### iter-cur
 copy a iter with it's current continuation
 
