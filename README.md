@@ -13,6 +13,7 @@ generator in common lisp
 ### cl-generator
 * `yield`
 * `yield*`
+* `with-yield`
 * `lambda*`
 * `defun*`
 * `defmethod*`
@@ -50,6 +51,16 @@ function* matryoshka(x) {
 	return yield yield yield x;
 }
 ```
+
+### with-yield
+`with-yield` returns a `ITER`. `lambda*`, `defun*`, `defmethod*`, `defmacro*` are implement on the top of `with-yield`.
+
+``` lisp
+(defparameter tmp (with-yield (+ (yield) 1)))
+(funcall (iter-next tmp))
+(funcall (iter-next tmp) 2)
+```
+
 ### lambda*
 ``` lisp
 (lambda* ()
