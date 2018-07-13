@@ -1,5 +1,12 @@
 (in-package :cl-generator-test)
 
+(define-test with-yield
+  (let* ((iter (with-yield (+ (yield) 1))))
+    (assert-true (iter-p iter))
+    (assert-nil (funcall (iter-next iter)))
+    (assert-eq 6 (funcall (iter-next iter) 5))
+    (assert-nil (iter-next iter))))
+
 (define-test lambda*-common
   (let* ((generator (lambda* (x) (yield (+ x 1))))
          (iter (funcall generator 4)))
