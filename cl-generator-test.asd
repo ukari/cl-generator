@@ -2,7 +2,7 @@
   :description "unit tests for cl-generator"
   :author "Muromi Ukari"
   :license "MIT"
-  :version "1.1.0"
+  :version "1.2.0"
   :homepage "https://github.com/ukari/cl-generator"
   :serial t
   :depends-on (lisp-unit cl-generator)
