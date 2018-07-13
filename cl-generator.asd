@@ -5,7 +5,7 @@
   :version "1.1.0"
   :homepage "https://github.com/ukari/cl-generator"
   :serial t
-  :depends-on (cl-cont cl-annot closer-mop)
+  :depends-on (cl-cont)
   :pathname "src/"
   :components
   ((:module "base"
