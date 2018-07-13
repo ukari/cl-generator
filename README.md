@@ -171,13 +171,8 @@ copy a iter with it's current continuation
 ```
 
 ## test
-
-### require
 ``` lisp
 (require 'cl-generator-test)
-```
-### run tests
-``` lisp
 (cl-generator-test:run)
 ```
 
