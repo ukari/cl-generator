@@ -13,6 +13,7 @@
   (:export #:iter-next
            #:iter-cur
            #:iter-p
+           #:with-yield
            #:lambda*
 	   #:defun*
 	   #:defmacro*

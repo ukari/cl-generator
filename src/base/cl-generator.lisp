@@ -85,14 +85,17 @@
 (defmacro enable-yield (&body body)
   `(with-call/cc (gen-pass (local-macros ,@body) nil)))
 
+(defmacro with-yield (&body body)
+  `(isolate-cont (enable-yield () ,@body)))
+
 (defmacro lambda* (args &body body)
-  `(lambda ,args (isolate-cont (enable-yield () ,@body))))
+  `(lambda ,args (with-yield ,@body)))
 
 (defmacro defun* (name args &body body)
-  `(defun ,name ,args (isolate-cont (enable-yield () ,@body))))
+  `(defun ,name ,args (with-yield ,@body)))
 
 (defmacro defmethod* (name args &body body)
-  `(defmethod ,name ,args (isolate-cont (enable-yield () ,@body))))
+  `(defmethod ,name ,args (with-yield ,@body)))
 
 (defmacro defmacro* (name args &body body)
-  `(defmacro ,name ,args `(isolate-cont (enable-yield () ,,@body))))
+  `(defmacro ,name ,args `(with-yield ,,@body)))
