@@ -7,7 +7,8 @@
 		#:with-call/cc
                 #:without-call/cc
 		#:call/cc)
-  (:export #:iter-next
+  (:export #:iter
+           #:iter-next
            #:iter-cur
            #:iter-p
            #:with-yield
