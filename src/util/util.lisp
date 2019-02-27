@@ -1,15 +1,15 @@
 (in-package :cl-generator-util)
 
 (defmacro for (expr &body body)
-  (let* ((var (car `,expr))	 
-         (generator (eval (cadr `,expr)))
+  (let* ((vars (reverse (cdr (reverse `,expr))))
+         (generator (eval (car (last `,expr))))
          (iter (gensym "iter")))
     `(let ((,iter ,generator))
-       (labels ((f (,var)
+       (labels ((f (,@vars)
                   ,@body
                   (if (not (null (iter-next ,iter)))
-                      (let ((res (funcall (iter-next ,iter))))
+                      (let ((res (multiple-value-list (funcall (iter-next ,iter)))))
                         (if (not (null (iter-next ,iter)))
-                            (f res))))))
-         (f (funcall (iter-next ,iter)))))))
+                            (apply #'f res))))))
+         (apply #'f (multiple-value-list (funcall (iter-next ,iter))))))))
 
