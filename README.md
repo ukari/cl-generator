@@ -18,6 +18,7 @@ generator in common lisp
 * `defun*`
 * `defmethod*`
 * `defmacro*`
+* `iter`
 * `iter-next`
 * `iter-cur`
 
