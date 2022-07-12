@@ -2,7 +2,7 @@
 
 (defmacro for (expr &body body)
   (let* ((vars (reverse (cdr (reverse `,expr))))
-         (generator (eval (car (last `,expr))))
+         (generator (car (last `,expr)))
          (iter (gensym "iter")))
     `(let ((,iter ,generator))
        (labels ((f (,@vars)
